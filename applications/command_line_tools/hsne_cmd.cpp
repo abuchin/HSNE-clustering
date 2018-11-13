@@ -47,9 +47,8 @@
 #include "hdi/visualization/scatterplot_drawer_fixed_color.h"
 #include "hdi/visualization/scatterplot_drawer_scalar_attribute.h"
 #include "hdi/analytics/multiscale_embedder_system_qobj.h"
-
-
-
+#include "hdi/data/io.h"
+#include "hdi/dimensionality_reduction/hierarchical_sne_inl.h"
 
 class MyInterfaceInitializer: public hdi::analytics::AbstractInterfaceInitializer{
 public:
@@ -269,12 +268,21 @@ int main(int argc, char *argv[])
     multiscale_embedder.setInterfaceInitializer(&interface_initializer);
     multiscale_embedder.initialize(num_scales,params);
     multiscale_embedder.createTopLevelEmbedder();
+    // This might be the position for exporting HSNE - Paul
 
-    while(true){
-        multiscale_embedder.doAnIterateOnAllEmbedder();
-        QApplication::processEvents();
-    }
-    return app.exec();
+    std::cout << "Write HSNE to file - Adaptation Paul" << std::endl;
+    std::ofstream filebin ("HSNE.bin",std::ios::binary); // binary
+    hdi::dr::IO::saveHSNE(multiscale_embedder.hSNE(), filebin, multiscale_embedder.logger()); 
+
+    // while(true){
+    //     multiscale_embedder.doAnIterateOnAllEmbedder();
+    //     QApplication    ::processEvents();
+    //     // never do anything here here - Paul
+       
+    // }
+
+
+    // return app.exec();
   }
   catch(std::logic_error& ex){ std::cout << "Logic error: " << ex.what() << std::endl;}
   catch(std::runtime_error& ex){ std::cout << "Runtime error: " << ex.what() << std::endl;}
