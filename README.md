@@ -5,9 +5,9 @@ File structure is per saveHSNE() method in hierachical_sne_inl.h.
 
 use:
 
-./hsne_cmd ../data/MNIST_1000.bin 1000 784
+	./hsne_cmd ../data/MNIST_1000.bin 1000 784
 
-Saving scale:	0
+	Saving scale:	0
 
 	size
 	
