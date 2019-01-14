@@ -10,7 +10,7 @@ use:
 	.data_conversion/csv_2_bin ../data/MNIST_1000.csv MNIST_1000.bin
 	#rows:	1000
 		columns:	784
-		#rows:	100
+		#rows:	1000
 
 
 	./hsne_cmd ../data/MNIST_1000.bin 1000 784
