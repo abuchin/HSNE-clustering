@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
     parser.addOption(scale_option);
 
     QCommandLineOption name_option(QStringList() << "a" << "analysis_name",
-            QCoreApplication::translate("main", "Number of scales (default: \"HSNE_Analysis\")."),
+            QCoreApplication::translate("main", "Analysis name (default: HSNE_analysis)"),
             QCoreApplication::translate("main", "analysis_name"));
     parser.addOption(name_option);
 
@@ -258,7 +258,7 @@ int main(int argc, char *argv[])
         num_scales = std::atoi(parser.value(scale_option).toStdString().c_str());
     }
     if(parser.isSet(name_option)){
-        name = parser.value(scale_option).toStdString();
+        name = parser.value(name_option).toStdString();
     }
 
     std::cout << "Scales: " << num_scales << std::endl;
@@ -269,9 +269,9 @@ int main(int argc, char *argv[])
     multiscale_embedder.initialize(num_scales,params);
     multiscale_embedder.createTopLevelEmbedder();
     // This might be the position for exporting HSNE - Paul
-
-    std::cout << "Write HSNE to file - Adaptation Paul" << std::endl;
-    std::ofstream filebin ("HSNE.bin",std::ios::binary); // binary
+    std::string HSNEfilename = name + ".bin";
+    std::cout << "Writing HSNE hierarchy to " << HSNEfilename << std::endl;
+    std::ofstream filebin (HSNEfilename, std::ios::binary); // binary
     hdi::dr::IO::saveHSNE(multiscale_embedder.hSNE(), filebin, multiscale_embedder.logger()); 
 
     // while(true){
