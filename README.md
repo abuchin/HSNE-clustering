@@ -3,7 +3,15 @@
 hsne_cmd, Instead of launching an interactive HSNE, simply export the full HSNE hierarchy to HSNE.bin in cwd.
 File structure is per saveHSNE() method in hierachical_sne_inl.h.
 
+Input is a csv file without headers or class labels. Hsne_cmd input first needs to be converted to a binary file.
+
 use:
+
+	.data_conversion/csv_2_bin ../data/MNIST_1000.csv MNIST_1000.bin
+	#rows:	1000
+		columns:	784
+		#rows:	1000
+
 
 	./hsne_cmd ../data/MNIST_1000.bin 1000 784
 	
