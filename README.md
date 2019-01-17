@@ -12,8 +12,8 @@ use:
 		columns:	784
 		#rows:	1000
 
-
-	./hsne_cmd ../data/MNIST_1000.bin 1000 784
+	HSNE hierarchy is saved to test.bin 
+	./hsne_cmd ../../../data/MNIST_1000.bin 1000 784 -s 2 -a test
 	
 	Saving scale:	0
 	size	
