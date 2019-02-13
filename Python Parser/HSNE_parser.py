@@ -5,23 +5,6 @@ from scipy.sparse import coo_matrix
 from HSNE import HSNE, DataScale, SubScale
 
 
-def read_trans_matrix(handle):
-    '''
-    Read transition matrix from HDI binary file
-    :param handle: _io.BufferedReader (object result from calling native Python open() )
-    :return: list
-    '''
-    matrix1d = []
-    rows = struct.unpack('i', handle.read(4))[0]
-    matrix1d.append(rows)
-    for repeat in range(rows):
-        rowlen = struct.unpack('i', handle.read(4))[0]
-        matrix1d.append(rowlen)
-        for fields in range(rowlen):
-            matrix1d.append(struct.unpack('i', handle.read(4))[0])
-            matrix1d.append(struct.unpack('f', handle.read(4))[0])
-    return matrix1d
-
 
 def read_uint_vector(handle):
     '''
@@ -30,9 +13,7 @@ def read_uint_vector(handle):
     :return: list
     '''
     vectorlength = struct.unpack('i', handle.read(4))[0]
-    vector = []
-    for i in range(vectorlength):
-        vector.append(struct.unpack('i', handle.read(4))[0])
+    vector = list(struct.unpack('i' * vectorlength, handle.read(4 * vectorlength)))
     return vector
 
 
@@ -43,9 +24,7 @@ def read_scalar_vector(handle):
     :return: list
     '''
     vectorlength = struct.unpack('i', handle.read(4))[0]
-    vector = []
-    for i in range(vectorlength):
-        vector.append(struct.unpack('f', handle.read(4))[0])
+    vector = list(struct.unpack('i' * vectorlength, handle.read(4 * vectorlength)))
     return vector
 
 
@@ -66,14 +45,28 @@ def read_HSNE_binary(filename, verbose=True):
         logger.log("Number of scales %i" % numscales)
         hierarchy = HSNE(numscales)
         logger.log("Start reading first scale of size %i" % scalesize)
-        tmatrix = read_trans_matrix(handle)
-        tmatrix = hdi_to_sparse(tmatrix)
+        tmatrix = read_sparse_matrix(handle)
         logger.log("Done reading first scale..")
         hierarchy[0] = DataScale(num_scales=numscales, tmatrix=tmatrix)
         for i in range(1, numscales):
             hierarchy[i] = build_subscale(handle, i, numscales, logger)
-        logger.log('Total time spent parsing hierarchy and building objects: %f' % (time.time() - longtic))
+        print('Total time spent parsing hierarchy and building objects: %f' % (time.time() - longtic))
         return hierarchy
+
+
+def read_sparse_matrix(handle):
+    cols = []
+    rows = []
+    weights = []
+    numrows = struct.unpack('i' , handle.read(4))[0]
+    shape = numrows
+    for rownum in range(numrows):
+        rowlen = struct.unpack('i', handle.read(4))[0]
+        row = list(struct.unpack("if" * rowlen, handle.read(8 * rowlen)))
+        cols += row[::2]
+        weights += row[1::2]
+        rows += [rownum] * rowlen
+    return coo_matrix((weights, (rows, cols)), shape=(shape, shape))
 
 
 def build_subscale(handle, i, numscales, logger):
@@ -88,7 +81,7 @@ def build_subscale(handle, i, numscales, logger):
     scalesize = int(struct.unpack('f', handle.read(4))[0])
     logger.log("Scale size: %i" % scalesize)
     logger.log("Reading transmatrix..")
-    tmatrix = hdi_to_sparse(read_trans_matrix(handle))
+    tmatrix = read_sparse_matrix(handle)
     logger.log("Reading landmarks of scale to original data..")
     lm_to_original = read_uint_vector(handle)
     logger.log("Reading landmarks to previous scale..")
@@ -98,10 +91,8 @@ def build_subscale(handle, i, numscales, logger):
     logger.log("Reading previous scale to current scale..")
     previous_to_current = read_uint_vector(handle)
     logger.log("Reading area of influence..")
-    tt = time.time()
 
-    area_of_influence = hdi_to_sparse(read_trans_matrix(handle))
-    logger.log('Time spent converting 1D to sparse: %f' % (time.time() - tt))
+    area_of_influence = read_sparse_matrix(handle)
 
     subscale = SubScale(scalenum=i,
                         num_scales=numscales,
@@ -113,25 +104,6 @@ def build_subscale(handle, i, numscales, logger):
                         area_of_influence=area_of_influence
                         )
     return subscale
-
-
-def hdi_to_sparse(hdidata):
-    '''
-    Convert 1D array to sparse matrix, output from read_trans_matrix() desired
-    :param hdidata: list
-    :return: scipy.sparse coo_matrix
-    '''
-    hdidata = hdidata[::-1]
-    columns = []
-    rows = []
-    edgeweights = []
-    shape = int(hdidata.pop())
-    for rownum in range(shape):
-        for field in range(int(hdidata.pop())):
-            rows.append(rownum)
-            columns.append(hdidata.pop())
-            edgeweights.append(hdidata.pop())
-    return coo_matrix((edgeweights, (rows, columns)), shape=(shape, shape))
 
 
 class Logger(object):
@@ -148,3 +120,7 @@ class Logger(object):
     def log(self, message):
         if self._enabled:
             print(message)
+
+if __name__ == "__main__":
+    import sys
+    read_HSNE_binary(sys.argv[1], verbose=False)
