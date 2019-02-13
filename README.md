@@ -34,7 +34,13 @@ use:
 		... landmark weights ...
 		... previous scale to current scale landmarks ...
 		... area of influence ...
-	
+
+See the notebooks in the Python Parser folder for explanation on the HSNE datastructure and a few basic examples on how one could do clustering on HSNE transition matrices.
+## Important: This code should only be run on Python 3.7 or newer since it might rely on dictionaries having their order maintained.
+
+
+
+
 
 [![DOI](https://zenodo.org/badge/100361974.svg)](https://zenodo.org/badge/latestdoi/100361974)
 
