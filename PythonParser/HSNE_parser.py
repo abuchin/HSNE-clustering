@@ -120,4 +120,4 @@ class Logger(object):
 
 if __name__ == "__main__":
     import sys
-    read_HSNE_binary(sys.argv[1], verbose=False)
+    read_HSNE_binary(sys.argv[1], verbose=True)

@@ -14,8 +14,8 @@ use:
 		columns:	784
 		#rows:	1000
 
-	# Create HSNE hierarchy with 2 scales and save it to test.hsne
-	./hsne_cmd ../../../data/MNIST_1000.bin 1000 784 -s 2 -a test
+	# Create HSNE hierarchy with 2 scales and save it to mnis_aoi.hsne
+	./hsne_cmd ../../../data/MNIST_1000.bin 1000 784 -s 2 -a mnis_aoi
 	
 	Saving scale:	0
 	size	
@@ -36,10 +36,36 @@ use:
 		... landmark weights ...
 		... previous scale to current scale landmarks ...
 		... area of influence ...
+	#Read it using the parser:
+	python PythonParser/HSNE_parser.py ./PythonParser/sample_data/mnis_aoi.hsne
 
-See the notebooks in the Python Parser folder for explanation on the HSNE datastructure, how to parse the HSNE hierarchy into a python object and a few clustering examples.
+	Number of scales 3
+		Start reading first scale of size 1000
+		Done reading first scale..
 
-Important: This code should only be run on Python 3.7 or newer since it might rely on dictionaries having their order maintained.
+	Next scale: 1
+	Scale size: 236
+		Reading transmatrix..
+		Reading landmarks of scale to original data..
+		Reading landmarks to previous scale..
+		Reading landmark weights..
+		Reading previous scale to current scale..
+		Reading area of influence..
+
+	Next scale: 2
+	Scale size: 29
+		Reading transmatrix..
+		Reading landmarks of scale to original data..
+		Reading landmarks to previous scale..
+		Reading landmark weights..
+		Reading previous scale to current scale..
+		Reading area of influence..
+	Total time spent parsing hierarchy and building objects: 0.055318
+	
+
+Running the parser as a script does nothing other than reading it and exiting the script. See the notebooks in the Python Parser folder for explanation on the HSNE datastructure, how to parse the HSNE hierarchy into a python object and a few clustering examples.
+
+Important: This code should only be run on Python 3.7 or newer since it might rely on dictionaries having their order maintained. Requires scipy and numpy .
 
 
 
