@@ -5,6 +5,8 @@ File structure is per saveHSNE() method in hierachical_sne_inl.h.
 
 Input is a csv file without headers or class labels. Hsne_cmd input first needs to be converted to a binary file.
 
+Build HDI as normal
+
 use:
 
 	.data_conversion/csv_2_bin ../data/MNIST_1000.csv MNIST_1000.bin
@@ -12,7 +14,7 @@ use:
 		columns:	784
 		#rows:	1000
 
-	HSNE hierarchy is saved to test.bin 
+	# Create HSNE hierarchy with 2 scales and save it to test.hsne
 	./hsne_cmd ../../../data/MNIST_1000.bin 1000 784 -s 2 -a test
 	
 	Saving scale:	0
@@ -35,8 +37,9 @@ use:
 		... previous scale to current scale landmarks ...
 		... area of influence ...
 
-See the notebooks in the Python Parser folder for explanation on the HSNE datastructure and a few basic examples on how one could do clustering on HSNE transition matrices.
-## Important: This code should only be run on Python 3.7 or newer since it might rely on dictionaries having their order maintained.
+See the notebooks in the Python Parser folder for explanation on the HSNE datastructure, how to parse the HSNE hierarchy into a python object and a few clustering examples.
+
+Important: This code should only be run on Python 3.7 or newer since it might rely on dictionaries having their order maintained.
 
 
 
