@@ -1,4 +1,5 @@
-from scipy.sparse import csc_matrix
+from scipy.sparse import csc_matrix, lil_matrix
+import numpy as _np
 
 
 class HSNE:
@@ -34,6 +35,10 @@ class HSNE:
         return self.scales[0]
 
     def get_datascale_mappings(self, scalenumber):
+        if scalenumber <= 0:
+            raise ValueError("Can't generate mapping for complete dataset, only scales get clustered")
+        if scalenumber > self.num_scales:
+            raise ValueError("Scale doesn't exist")
         maps = None
         for scale in self.scales[1:scalenumber + 1]:  # Don't include datascale
             if maps is None:
@@ -44,6 +49,19 @@ class HSNE:
                 for key in maps:
                     maps[key] = scale.best_representatives[maps[key]]
         return maps
+
+    def get_map_by_cluster(self, scalenumber, clustering):
+        if len(clustering) != self.scales[scalenumber].area_of_influence.shape[1]:
+            raise ValueError("Number of labels does not match number of landmarks in scale")
+        if scalenumber <= 0:
+            raise ValueError("Can't generate mapping for complete dataset, only scales get clustered")
+        for scale in self.scales[scalenumber:0:-1]:  # Don't include datascale
+            new_aoi = lil_matrix((scale.area_of_influence.shape[0],
+                                               len(set(clustering))))
+            for i, label in enumerate(_np.unique(clustering)):
+                new_aoi[:, i] = scale.area_of_influence * [[1] if label == x else [0] for x in clustering]
+            clustering = csc_matrix(new_aoi).argmax(axis=1).A1
+        return clustering
 
 
 class DataScale:

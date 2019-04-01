@@ -24,7 +24,7 @@ def read_scalar_vector(handle):
     :return: list
     '''
     vectorlength = struct.unpack('i', handle.read(4))[0]
-    vector = list(struct.unpack('i' * vectorlength, handle.read(4 * vectorlength)))
+    vector = list(struct.unpack('f' * vectorlength, handle.read(4 * vectorlength)))
     return vector
 
 
@@ -38,8 +38,7 @@ def read_HSNE_binary(filename, verbose=True):
     logger = Logger(verbose)
     longtic = time.time()
     with open(filename, 'rb') as handle:
-        majorversion = struct.unpack('f', handle.read(4))[0]  # Never used
-        minorversion = struct.unpack('f', handle.read(4))[0]  # Never used
+        _, _ = struct.unpack('ff', handle.read(8))  # Never used
         numscales = int(struct.unpack('f', handle.read(4))[0])
         scalesize = int(struct.unpack('f', handle.read(4))[0])
         logger.log("Number of scales %i" % numscales)
@@ -91,9 +90,7 @@ def build_subscale(handle, i, numscales, logger):
     logger.log("Reading previous scale to current scale..")
     previous_to_current = read_uint_vector(handle)
     logger.log("Reading area of influence..")
-
     area_of_influence = read_sparse_matrix(handle)
-
     subscale = SubScale(scalenum=i,
                         num_scales=numscales,
                         tmatrix=tmatrix,

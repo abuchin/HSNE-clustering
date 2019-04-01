@@ -267,22 +267,18 @@ int main(int argc, char *argv[])
     multiscale_embedder.setName(name);
     multiscale_embedder.setInterfaceInitializer(&interface_initializer);
     multiscale_embedder.initialize(num_scales,params);
-    multiscale_embedder.createTopLevelEmbedder();
-    // This might be the position for exporting HSNE - Paul
-    std::string HSNEfilename = name + ".bin";
+    // multiscale_embedder.createTopLevelEmbedder(); - disable UI - Paul
+    // Save hierarchy to -a.hsne
+    std::string HSNEfilename = name + ".hsne"; // Generate filename ased on -a option
     std::cout << "Writing HSNE hierarchy to " << HSNEfilename << std::endl;
-    std::ofstream filebin (HSNEfilename, std::ios::binary); // binary
-    hdi::dr::IO::saveHSNE(multiscale_embedder.hSNE(), filebin, multiscale_embedder.logger()); 
+    std::ofstream filebin (HSNEfilename, std::ios::binary); // binary format
+    hdi::dr::IO::saveHSNE(multiscale_embedder.hSNE(), filebin, multiscale_embedder.logger()); // Save to file, for format see function
 
     // while(true){
     //     multiscale_embedder.doAnIterateOnAllEmbedder();
-    //     QApplication    ::processEvents();
-    //     // never do anything here here - Paul
-       
+    //     QApplication    ::processEvents();      
     // }
-
-
-    // return app.exec();
+    // return app.exec(); Disable more UI
   }
   catch(std::logic_error& ex){ std::cout << "Logic error: " << ex.what() << std::endl;}
   catch(std::runtime_error& ex){ std::cout << "Runtime error: " << ex.what() << std::endl;}
