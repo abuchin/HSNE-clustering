@@ -1,10 +1,16 @@
-## Changes from original HDI:
+## SCHNEL
+**S**calable **C**lustering of **H**ierarchical Stochstic **N**eighbour **E**mbedding hierarchies using **L**ouvain community detection.
+
+Clustering of high dimensional data using manifold learning and subsampling. Clustering is performed on a small representative subset of the data and translated back to the full dataset.
+
+See the notebooks in the Python Parser folder for explanation on the HSNE datastructure, how to parse the HSNE hierarchy into a python object and a clustering [example](https://github.com/paulderaadt/HSNE-clustering/blob/master/PythonParser/Louvain_clustering_example.ipynb).
+
+
 
 hsne_cmd, Instead of launching an interactive HSNE, simply export the full HSNE hierarchy to name.hsne in cwd.
 
 Input is a csv file without headers or class labels. Hsne_cmd input first needs to be converted to a binary file.
 
-Build HDI as normal
 
 use:
 
@@ -61,10 +67,6 @@ use:
 		Reading area of influence..
 	Total time spent parsing hierarchy and building objects: 0.055318
 	
-
-Running the parser as a script does nothing other than reading it and exiting the script. See the notebooks in the Python Parser folder for explanation on the HSNE datastructure, how to parse the HSNE hierarchy into a python object and a clustering [example](https://github.com/paulderaadt/HSNE-clustering/blob/master/PythonParser/Louvain_clustering_example.ipynb).
-
-
 HSNE-clustering uses:
 
 Pezzotti N., Hpllt T., Lelieveldt B., Eisemann E., Vilanova A.. _Hierarchical Stochastic Neighbor Embedding Computer_ Graphics Forum. 2016;35:21–30.
