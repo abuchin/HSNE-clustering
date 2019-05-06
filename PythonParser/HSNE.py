@@ -1,10 +1,13 @@
 from scipy.sparse import csc_matrix, lil_matrix
 import numpy as _np
-
+import warnings
+import igraph as ig
+import louvain
 
 class HSNE:
     # HSNE hierarchy object
     # Supports slicing and looping
+    # Contains the scales of which the hierarchy is built
     def __init__(self, num_scales):
         # Number of scales in hierarchy including datascale
         self.num_scales = num_scales
@@ -38,7 +41,7 @@ class HSNE:
         if scalenumber <= 0:
             raise ValueError("Can't generate mapping for complete dataset, only scales get clustered")
         if scalenumber > self.num_scales:
-            raise ValueError("Scale doesn't exist")
+            raise ValueError("Scale doesn't exist, object has %i scales" % self.num_scales)
         maps = None
         for scale in self.scales[1:scalenumber + 1]:  # Don't include datascale
             if maps is None:
@@ -62,6 +65,33 @@ class HSNE:
                 new_aoi[:, i] = scale.area_of_influence * [[1] if label == x else [0] for x in clustering]
             clustering = csc_matrix(new_aoi).argmax(axis=1).A1
         return clustering
+    
+    def cluster_scale(self, scalenumber, prop_method='cluster'):
+        '''Cluster the given scale using Louvain community detection'''
+        if scalenumber == 0:
+            warnings.warn("Warning: You are about to cluster the full dataset, this might take a very long time")
+            return self.run_louvain(scalenumber)
+        elif scalenumber >= self.num_scales:
+            raise ValueError("Scale doesn't exist, object has %i scales" % self.num_scales)
+        if prop_method == 'cluster':
+            membership = self.run_louvain(scalenumber)
+            return self.get_map_by_cluster(scalenumber, membership)
+        elif prop_method == 'label':
+            membership = self.run_louvain(scalenumber)
+            mapping = self.get_datascale_mappings(scalenumber)
+            return _np.asarray(membership)[list(mapping.values())]
+
+
+        else:
+            raise ValueError("Invalid method, options are 'label' or 'cluster'")
+            
+    def run_louvain(self, scalenumber):
+        sources, targets = self.scales[scalenumber].tmatrix.nonzero()
+        edgelist = list(zip(sources.tolist(), targets.tolist()))
+        G = ig.Graph(edgelist)
+        G.es['weight'] = self.scales[scalenumber].tmatrix.data
+        return louvain.find_partition(G, louvain.ModularityVertexPartition, weights=G.es['weight']).membership
+        
 
 
 class DataScale:
