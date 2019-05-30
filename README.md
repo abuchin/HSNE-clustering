@@ -1,5 +1,5 @@
 ## SCHNEL
-**S**calable **C**lustering of **H**ierarchical Stochstic **N**eighbour **E**mbedding hierarchies using **L**ouvain community detection.
+**S**calable **C**lustering of **H**ierarchical Stochastic **N**eighbour **E**mbedding hierarchies using **L**ouvain community detection.
 
 Clustering of high dimensional data using manifold learning and subsampling. Clustering is performed on a small representative subset of the data and translated back to the full dataset.
 
